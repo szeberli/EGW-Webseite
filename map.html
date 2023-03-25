@@ -1,0 +1,267 @@
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-tilelayer-swiss@2.3.0/dist/Leaflet.TileLayer.Swiss.umd.js"
+        crossorigin integrity="sha384-M4p8VfZ8RG6qNiPYA3vOCApQXAlLtnJXVPdydMYPAsvvIDsWp2dqqzF2OEeWWNhy"></script>
+    <style>
+        #map {
+            height: 700px;
+            width: 100%;
+            z-index: 0;
+        }
+        #map img {
+            border: 0 !important;
+        }
+        #overlay {
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 9999;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .overlay-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            font-size: 14px;
+            z-index: 9999;
+        }
+        #overlay.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id='map'>
+        <div id="overlay" class="hidden">
+            <div class="overlay-text">Verwende STRG+Scrollen zum Zoomen der Karte</div>
+        </div>
+    </div>
+    <script>
+        var map = new L.Map("map", {
+            crs: L.CRS.EPSG2056,
+        });
+        var mapLayer = L.tileLayer.swiss();
+        var satelliteLayer = L.tileLayer.swiss({
+            layer: 'ch.swisstopo.swissimage',
+            maxNativeZoom: 28
+        }).addTo(map);
+        map.fitSwitzerland();
+        map.setView([47.144476322018335, 7.791226874888196], 26);
+        var baseMaps = {
+            'Karte': mapLayer,
+            'Satellite': satelliteLayer,
+        };
+        var overlayMaps = {};
+        L.control.scale({
+            imperial: false,
+            maxWidth: 200
+        }).addTo(map);
+        L.control.layers(baseMaps, overlayMaps, {
+            collapsed: false
+        }).addTo(map);
+        // Daten aus <!-- https://geoman.io/ -->
+        var data = {
+            "type": "FeatureCollection",
+            "features": [{
+                    "type": "Feature",
+                    "properties": {
+                        "title": "EGW Kleindietwil",
+                        "marker-color": "#4b42bb",
+                        "marker-size": "medium",
+                    },
+                    "geometry": {
+                        "coordinates": [
+                            7.792196808290186,
+                            47.144154785091985
+                        ],
+                        "type": "Point"
+                    },
+                    "id": 0
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "title": "Parkplatz",
+                        "marker-color": "#4b42bb",
+                        "marker-size": "medium"
+                    },
+                    "geometry": {
+                        "coordinates": [
+                            7.791126521580452,
+                            47.14388141740807
+                        ],
+                        "type": "Point"
+                    },
+                    "id": 1
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "title": "Parkplatz",
+                        "marker-color": "#4b42bb",
+                        "marker-size": "medium"
+                    },
+                    "geometry": {
+                        "coordinates": [
+                            7.793228493692254,
+                            47.143342753197146
+                        ],
+                        "type": "Point"
+                    },
+                    "id": 2
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "title": "Parkplatz",
+                        "marker-color": "#4b42bb",
+                        "marker-size": "medium"
+                    },
+                    "geometry": {
+                        "coordinates": [
+                            7.790469857529843,
+                            47.14485405299271
+                        ],
+                        "type": "Point"
+                    },
+                    "id": 3
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "title": "Parkplatz",
+                        "marker-color": "#4b42bb",
+                        "marker-size": "medium"
+                    },
+                    "geometry": {
+                        "coordinates": [
+                            7.790757861756305,
+                            47.144939896845926
+                        ],
+                        "type": "Point"
+                    },
+                    "id": 4
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "title": "Parkplatz",
+                        "marker-color": "#4b42bb",
+                        "marker-size": "medium"
+                    },
+                    "geometry": {
+                        "coordinates": [
+                            7.791192707654346,
+                            47.145764337585916
+                        ],
+                        "type": "Point"
+                    },
+                    "id": 5
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "title": "Parkplatz<br>Für Senioren / Beeintrechtigte Menschen",
+                        "marker-color": "#4b42bb",
+                        "marker-size": "medium"
+                    },
+                    "geometry": {
+                        "coordinates": [
+                            7.791994772444781,
+                            47.14405500108953
+                        ],
+                        "type": "Point"
+                    },
+                    "id": 6
+                }
+            ]
+        };
+
+        L.geoJSON(data, {
+            style: function (feature) {
+                return {
+                    color: feature.properties['marker-color']
+                };
+            },
+            onEachFeature: function (feature, layer) {
+                if (feature.id === 0) {
+                    layer.bindTooltip(feature.properties.title, {
+                        permanent: true,
+                        offset: [20, 0]
+                    }).openTooltip();
+                } else {
+                    layer.bindTooltip(feature.properties.title)
+                }
+            },
+            pointToLayer: function (feature, latlng) {
+                if (feature.id === 0) {
+                    return L.marker(latlng, {
+                        icon: L.icon({
+                            // EGW Icon
+                            iconUrl: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSINCgkgaWQ9InN2ZzMwMjUiIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6Y2M9Imh0dHA6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL25zIyIgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIiB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIiBzb2RpcG9kaTpkb2NuYW1lPSJtYXBfbWFya2VyX2ZvbnRfYXdlc29tZS5zdmciIGlua3NjYXBlOnZlcnNpb249IjAuNDguMy4xIHI5ODg2Ig0KCSB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjQ0cHgiIGhlaWdodD0iNjRweCINCgkgdmlld0JveD0iLTMyLjM4MSA0ODAuNSA0NCA2NCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAtMzIuMzgxIDQ4MC41IDQ0IDY0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzb2RpcG9kaTpuYW1lZHZpZXcgIGlua3NjYXBlOmN5PSI4OTYiIGlua3NjYXBlOmN4PSI4OTYiIGlua3NjYXBlOnpvb209IjAuMTMxNjk2NDMiIHNob3dncmlkPSJmYWxzZSIgZ3VpZGV0b2xlcmFuY2U9IjEwIiBncmlkdG9sZXJhbmNlPSIxMCIgb2JqZWN0dG9sZXJhbmNlPSIxMCIgYm9yZGVyY29sb3I9IiM2NjY2NjYiIHBhZ2Vjb2xvcj0iI2ZmZmZmZiIgYm9yZGVyb3BhY2l0eT0iMSIgaWQ9Im5hbWVkdmlldzMwMzEiIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9InN2ZzMwMjUiIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjAiIGlua3NjYXBlOndpbmRvdy15PSIyNSIgaW5rc2NhcGU6d2luZG93LXg9IjAiIGlua3NjYXBlOndpbmRvdy1oZWlnaHQ9IjQ4MCIgaW5rc2NhcGU6d2luZG93LXdpZHRoPSI2NDAiIGlua3NjYXBlOnBhZ2VzaGFkb3c9IjIiIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwIj4NCgk8L3NvZGlwb2RpOm5hbWVkdmlldz4NCjxnIGlkPSJnMzAyNyIgdHJhbnNmb3JtPSJtYXRyaXgoMSwwLDAsLTEsMzY0LjQ3NDU4LDEyNzAuMjM3MykiPg0KCQ0KCQk8cGF0aCBpZD0icGF0aDMwMjkiIGlua3NjYXBlOmNvbm5lY3Rvci1jdXJ2YXR1cmU9IjAiIGZpbGw9IiMxNTQ4ODkiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIxLjAwNDkiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgZD0iDQoJCU0tMzY0LjI1Nyw3NjguMTU5YzAsMi44Ny0xLjAxNiw1LjMyLTMuMDQ3LDcuMzUyYy0yLjAzMSwyLjAzMS00LjQ4MiwzLjA0Ny03LjM1MiwzLjA0N2MtMi44NywwLTUuMzIyLTEuMDE2LTcuMzUzLTMuMDQ3DQoJCWMtMi4wMzEtMi4wMzEtMy4wNDYtNC40ODEtMy4wNDYtNy4zNTJjMC0yLjg3MSwxLjAxNS01LjMyMiwzLjA0Ni03LjM1NGMyLjAzMS0yLjAzLDQuNDgyLTMuMDQ3LDcuMzUzLTMuMDQ3DQoJCWMyLjg3LDAsNS4zMjEsMS4wMTcsNy4zNTIsMy4wNDdDLTM2NS4yNzMsNzYyLjgzNy0zNjQuMjU3LDc2NS4yODgtMzY0LjI1Nyw3NjguMTU5eiBNLTM1My44NTgsNzY4LjE1OQ0KCQljMC0yLjk1Mi0wLjQ0Ny01LjM3Ni0xLjM0MS03LjI3MWwtMTQuNzg2LTMxLjQ0MWMtMC40MzMtMC44OTMtMS4wNzYtMS41OTYtMS45MjktMi4xMTFjLTAuODUzLTAuNTE1LTEuNzY3LTAuNzcyLTIuNzQyLTAuNzcyDQoJCXMtMS44ODksMC4yNTgtMi43NDIsMC43NzJjLTAuODU0LDAuNTE2LTEuNDgzLDEuMjE5LTEuODg5LDIuMTExbC0xNC44MjcsMzEuNDQxYy0wLjg5NCwxLjg5Ni0xLjM0MSw0LjMxOS0xLjM0MSw3LjI3MQ0KCQljMCw1Ljc0LDIuMDMyLDEwLjY0Myw2LjA5MywxNC43MDRjNC4wNjMsNC4wNjMsOC45NjQsNi4wOTQsMTQuNzA1LDYuMDk0YzUuNzQxLDAsMTAuNjQzLTIuMDMxLDE0LjcwNS02LjA5NA0KCQlDLTM1NS44OSw3NzguODAyLTM1My44NTgsNzczLjg5OS0zNTMuODU4LDc2OC4xNTl6Ii8+DQo8L2c+DQo8Zz4NCgk8cmVjdCB4PSItMjIuOTciIHk9IjQ4Ny45MTkiIGZpbGw9IiNGRkZGRkYiIHdpZHRoPSIyNS41NzYiIGhlaWdodD0iMjUuNTc2Ii8+DQoJPHBhdGggZmlsbD0iIzJEMzg4NCIgZD0iTS0wLjI3MSw0OTAuNzk4aC04LjQ3MXY4LjY4OEMtMy45NjQsNDk4LjgzNC0wLjI3MSw0OTUuMTk2LTAuMjcxLDQ5MC43OTh6Ii8+DQoJPHBhdGggZmlsbD0iIzJEMzg4NCIgZD0iTTIuNjA2LDQ5MS44ODNjLTAuNTk3LDUuNDg1LTUuMzc1LDkuODI5LTExLjM0OSwxMC40Mjd2MTEuMTg2SDIuNjA2VjQ5MS44ODN6Ii8+DQoJPHBhdGggZmlsbD0iIzY4MUI2NyIgZD0iTS0xMS42MjEsNDk5LjQzMXYtMTEuNTEyaC04LjQ3MXYyLjg3OUMtMjAuMDkyLDQ5NS4xOTYtMTYuNCw0OTguODM0LTExLjYyMSw0OTkuNDMxTC0xMS42MjEsNDk5LjQzMXoiLz4NCgk8cGF0aCBmaWxsPSIjMkQzODg0IiBkPSJNLTIyLjk3LDQ5MS44ODN2MjEuNjEyaDExLjM0OVY1MDIuMzFDLTE3LjY0OCw1MDEuNzEyLTIyLjQyNyw0OTcuMzY4LTIyLjk3LDQ5MS44ODN6Ii8+DQo8L2c+DQo8L3N2Zz4NCg==',
+                            iconSize: [44, 64],
+                            iconAnchor: [22, 64],
+                            popupAnchor: [40, 20],
+                        })
+                    });
+                } else {
+                    return L.marker(latlng, {
+                        icon: L.icon({
+                            // Parkplatz Icon
+                            iconUrl: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSINCgkgaWQ9InN2ZzIxIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOmNjPSJodHRwOi8vY3JlYXRpdmVjb21tb25zLm9yZy9ucyMiIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyIgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyINCgkgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSI2NHB4IiBoZWlnaHQ9IjY0cHgiDQoJIHZpZXdCb3g9IjEzIDUyNS4wMDEgNjQgNjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMTMgNTI1LjAwMSA2NCA2NCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8ZyBpZD0iZzI5IiB0cmFuc2Zvcm09Im1hdHJpeCgxLjMzMzMzMzMsMCwwLC0xLjMzMzMzMzMsMCw2MDEuMDAxNTkpIj4NCgk8ZyBpZD0iZzMxIj4NCgkJPHBhdGggaWQ9InBhdGgzMyIgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyLjY2NSw1Ni45NmMtMi44ODIsMC4wMDItMi44NzUtMi44NzUtMi44NzUtMi44NzV2LTQyLjE3YzAsMC0wLjAwNy0yLjg3OCwyLjg3NS0yLjg3NQ0KCQkJaDQyLjE3YzIuOS0wLjAwMywyLjg3NSwyLjg3NSwyLjg3NSwyLjg3NXY0Mi4xN2MwLDAsMC4wMjQsMi44ODQtMi44NzUsMi44NzVIMTIuNjY1eiIvPg0KCQk8cGF0aCBpZD0icGF0aDM1IiBmaWxsPSIjMTU0ODg5IiBkPSJNMTIuNjY1LDU2LjAwMmMtMS4wNTgsMC0xLjkxNy0wLjg1OC0xLjkxNy0xLjkxN3YtNDIuMTdjMC0xLjA1OSwwLjg1OC0xLjkxNywxLjkxNy0xLjkxNw0KCQkJaDQyLjE3YzEuMDU4LDAsMS45MTYsMC44NTgsMS45MTYsMS45MTd2NDIuMTdjMCwxLjA1OC0wLjg1OCwxLjkxNy0xLjkxNiwxLjkxN0gxMi42NjV6Ii8+DQoJCTxwYXRoIGlkPSJwYXRoMzciIGQ9Ik0xMi42NjUsNTdjLTEuNDU0LDAuMDAxLTIuMTkxLTAuNzMxLTIuNTU0LTEuNDU5Yy0wLjM2My0wLjcyOS0wLjM2MS0xLjQ1Ny0wLjM2MS0xLjQ1N1YxMS45MTYNCgkJCWMwLDAtMC4wMDItMC43MjgsMC4zNjEtMS40NTdjMC4zNjQtMC43MjgsMS4xLTEuNDYsMi41NTQtMS40NThoNDIuMTdjMS40NjMtMC4wMDIsMi4yLDAuNzMsMi41NjEsMS40NTgNCgkJCWMwLjM2MSwwLjcyOSwwLjM1NCwxLjQ1NiwwLjM1NCwxLjQ1N3Y0Mi4xN2MwLDAsMC4wMDYsMC43MjktMC4zNTUsMS40NThjLTAuMzYxLDAuNzI5LTEuMDk4LDEuNDYxLTIuNTYsMS40NTdIMTIuNjY1eg0KCQkJIE0xMi42NjUsNTYuOTZoNDIuMTdjMi44OTksMC4wMSwyLjg3NS0yLjg3NSwyLjg3NS0yLjg3NXYtNDIuMTdjMCwwLDAuMDI1LTIuODc4LTIuODc1LTIuODc1aC00Mi4xNw0KCQkJQzkuNzg0LDkuMDM4LDkuNzksMTEuOTE2LDkuNzksMTEuOTE2djQyLjE3QzkuNzksNTQuMDg1LDkuNzg0LDU2Ljk2MiwxMi42NjUsNTYuOTZ6Ii8+DQoJCTxwYXRoIGlkPSJwYXRoMzkiIGZpbGw9IiNGRkZGRkYiIGQ9Ik0zNC44MzksNDQuOTM3aC03LjcwNVYzNC4yOTVoNy44ODNjMS44MjgsMCwzLjE5LDAuNTYsNC4wOTQsMS42NzYNCgkJCWMwLjg5OCwxLjExNiwxLjM0OSwyLjMzMSwxLjM0OSwzLjY0NWMwLDEuOTkxLTAuNzA4LDMuNDU2LTIuMTE5LDQuMzk0QzM3LjQzNSw0NC42MjcsMzYuMjY4LDQ0LjkzNywzNC44MzksNDQuOTM3eiBNMjcuMDQsMTYuMjI3DQoJCQloLTUuMWwwLjA0NywzMy41MjVsMTIuNTk0LDAuMDJjMS4yODEsMCwyLjUxNy0wLjEzNiwzLjcwMy0wLjQwOXMyLjQyLTAuOTE1LDMuNy0xLjkyNGMwLjk5Ny0wLjc3OSwxLjg0NC0xLjg0OCwyLjUzNi0zLjIxMg0KCQkJYzAuNjkzLTEuMzY1LDEuMDQxLTIuOTQ2LDEuMDQxLTQuNzQ4YzAtMi4zOC0wLjg3NC00LjY0Ni0yLjYyMi02Ljc5NmMtMS43NDktMi4xNDktNC4zMDQtMy4yMjQtNy42NjUtMy4yMjRoLTguMTM5TDI3LjA0LDE2LjIyN3oNCgkJCSIvPg0KCTwvZz4NCjwvZz4NCjwvc3ZnPg0K',
+                            iconSize: [32, 32], // size of the icon
+                            iconAnchor: [16, 16],
+                        })
+                    });
+                    //return L.circleMarker(latlng, {
+                    //    radius: 12,
+                    //    fillColor: feature.properties['marker-color'],
+                    //    weight: 1,
+                    //    opacity: 1,
+                    //    fillOpacity: 0.6
+                    //});
+                }
+            },
+        }).addTo(map);
+        // Deaktiviere das Zoomen mit der Maus zeigen via Overlay
+        var overlay = L.layerGroup().addTo(map);
+        var overlay = document.getElementById('overlay');
+        var mapDiv = document.getElementById('map');
+        var mouseInsideMapDiv = false;
+
+        map.scrollWheelZoom.disable();
+        // Registriere einen Event-Listener für Tastendruckereignisse
+        document.addEventListener('keydown', function (event) {
+            if (event.ctrlKey) {
+                map.scrollWheelZoom.enable(); // Erlaube das Zoomen, wenn die Ctrl-Taste gedrückt wird
+            }
+        });
+        document.addEventListener('keyup', function (event) {
+            map.scrollWheelZoom.disable(); // Deaktiviere das Zoomen, wenn die Ctrl-Taste losgelassen wird
+        });
+        mapDiv.addEventListener('mouseenter', function () {
+            mouseInsideMapDiv = true;
+        });
+        mapDiv.addEventListener('mouseleave', function () {
+            mouseInsideMapDiv = false;
+        });
+        document.addEventListener('wheel', function (e) {
+            if (mouseInsideMapDiv && !e.ctrlKey) {
+                overlay.classList.remove('hidden');
+                setTimeout(function () {
+                    overlay.classList.add('hidden');
+                }, 1500);
+            }
+        });
+    </script>
+</body>
+</html>
